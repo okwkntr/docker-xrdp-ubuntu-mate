@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  xrdp:
+    build:
+      context: ./
+#   volumes:
+#     - ./data/:/home/${USER}/
+#   environment:
