@@ -67,19 +67,14 @@ RUN echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 
 RUN mkdir -p ${HOME}/.atom/packages
 WORKDIR ${HOME}/.atom/packages
-#RUN cp ${HOME}/.atom/config.cson ${HOME}/.atom/config.cson.back
-#RUN awk '{print} /disabledPackages:/{flag=1;} \
-#	 {if (flag==1) {print "    \"markdown-preview\""}; flag=0}'\
-#	 ${HOME}/.atom/config.cson.back >${HOME}/.atom/config.cson
-#RUN sudo -u ${USER} apm disable markdown-preview
-RUN printf '"*":\n' > ${HOME}/.atom/config.cson; \
-    printf '  core:\n' >> ${HOME}/.atom/config.cson; \
-    printf '    disabledPackages: [\n' >> ${HOME}/.atom/config.cson; \
-    printf '      "markdown-preview"\n' >> ${HOME}/.atom/config.cson; \
-    printf '    ]\n' >> ${HOME}/.atom/config.cson \
-    printf '  "markdown-preview-enhanced": {}\n' >> ${HOME}/.atom/config.cson \
-
-RUN git clone https://github.com/shd101wyy/markdown-preview-enhanced.git
+#RUN printf '"*":\n' > ${HOME}/.atom/config.cson; \
+#    printf '  core:\n' >> ${HOME}/.atom/config.cson; \
+#    printf '    disabledPackages: [\n' >> ${HOME}/.atom/config.cson; \
+#    printf '      "markdown-preview"\n' >> ${HOME}/.atom/config.cson; \
+#    printf '    ]\n' >> ${HOME}/.atom/config.cson \
+#    printf '  "markdown-preview-enhanced": {}\n' >> ${HOME}/.atom/config.cson
+#
+#RUN git clone https://github.com/shd101wyy/markdown-preview-enhanced.git
 
 RUN chown -R "${USER}:${USER}" ${HOME}
 
