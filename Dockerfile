@@ -15,6 +15,13 @@ RUN apt.sh \
 RUN apt-add-repository -y ppa:hermlnx/xrdp \
     && apt.sh xrdp \
     && apt-add-repository --remove -y ppa:hermlnx/xrdp
+RUN sed -i -e "s|\(.*exec.*/etc/X11/Xsession.*\)|#\1|g" \
+	    /etc/xrdp/startwm.sh \
+	    && echo export GTP_IM_MODULE=ibus >>/etc/xrdp/startwm.sh \
+	    && echo export QT_IM_MODULE=ibus >>/etc/xrdp/startwm.sh \
+	    && echo export XMODIFIERS=\"@im=ibus\" >>/etc/xrdp/startwm.sh \
+	    && echo ibus-daemon -dx >>/etc/xrdp/startwm.sh \
+	    && echo mate-session >>/etc/xrdp/startwm.sh
 
 ## set timezone
 RUN ln -s -f /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
@@ -59,12 +66,6 @@ RUN export uid=${UID} gid=${GID} \
     && echo "${USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers \
     && echo "${USER}:${PASSWORD}" | chpasswd
 WORKDIR ${HOME}
-
-RUN echo export GTK_IM_MODULE=ibus >> ${HOME}/.xsession\
-    && echo export QT_IM_MODULE=ibus >> ${HOME}/.xsession \
-    && echo export XMODIFIERS=@im=ibus >>${HOME}/.xsession \
-    && echo ibus-daemon -d >>${HOME}/.xsession \
-    && echo mate-session >>${HOME}/.xsession
 
 RUN echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 
