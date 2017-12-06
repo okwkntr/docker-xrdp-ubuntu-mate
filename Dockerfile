@@ -41,18 +41,8 @@ RUN sed -i -e "s/^enabled=True/enabled=False/" /etc/xdg/user-dirs.conf \
 ## ibus
 ENV LANG "ja_JP.UTF-8"
 
-RUN apt.sh vim less git tightvncserver
+RUN apt.sh vim less git
 
-#RUN apt-add-repository ppa:webupd8team/atom
-#RUN apt.sh atom 
-#RUN apt-add-repository --remove ppa:webupd8team/atom
-
-WORKDIR /etc/xrdp
-#COPY files/xrdp/km-e0010411.ini km-0411.ini
-#RUN chmod 644 km-0411.ini \
-#    && ln -s km-0411.ini km-e0010411.ini \
-#    && ln -s km-0411.ini km-e0200411.ini \
-#    && ln -s km-0411.ini km-e0210411.ini
 
 ## create vagrant account.uid:gid=1000:1000
 ARG USER=jack
@@ -71,8 +61,12 @@ RUN echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 
 # install atom packages
 
-RUN mkdir -p ${HOME}/.atom/packages
-WORKDIR ${HOME}/.atom/packages
+#RUN apt-add-repository ppa:webupd8team/atom
+#RUN apt.sh atom 
+#RUN apt-add-repository --remove ppa:webupd8team/atom
+
+#RUN mkdir -p ${HOME}/.atom/packages
+#WORKDIR ${HOME}/.atom/packages
 #RUN printf '"*":\n' > ${HOME}/.atom/config.cson; \
 #    printf '  core:\n' >> ${HOME}/.atom/config.cson; \
 #    printf '    disabledPackages: [\n' >> ${HOME}/.atom/config.cson; \
