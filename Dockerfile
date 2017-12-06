@@ -15,19 +15,18 @@ RUN apt.sh \
 RUN apt-add-repository -y ppa:hermlnx/xrdp \
     && apt.sh xrdp \
     && apt-add-repository --remove -y ppa:hermlnx/xrdp
-RUN sed -i -e "s|\(.*exec.*/etc/X11/Xsession.*\)|#\1|g" \
-	    /etc/xrdp/startwm.sh \
-	    && echo export GTP_IM_MODULE=ibus >>/etc/xrdp/startwm.sh \
-	    && echo export QT_IM_MODULE=ibus >>/etc/xrdp/startwm.sh \
-	    && echo export XMODIFIERS=\"@im=ibus\" >>/etc/xrdp/startwm.sh \
-	    && echo ibus-daemon -d >>/etc/xrdp/startwm.sh \
-	    && echo mate-session >>/etc/xrdp/startwm.sh
 
 ## set timezone
 RUN ln -s -f /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
     && dpkg-reconfigure tzdata
 
-RUN apt.sh ibus-mozc locales fonts-takao
+RUN mkdir -p /usr/share/locale-langpack/ja
+RUN apt.sh language-pack-gnome-ja \
+	   language-pack-gnome-ja-base \
+	   language-pack-ja language-pack-ja-base \
+	   fonts-takao-gothic fonts-takao-mincho \
+     	   $(check-language-support)
+RUN apt.sh ibus-mozc locales
 RUN sed -i -e "s/^enabled=True/enabled=False/" /etc/xdg/user-dirs.conf \
     && sed -i -e "s/^# ja_JP.UTF-8/ja_JP.UTF-8/" /etc/locale.gen \
     && locale-gen \
@@ -35,11 +34,11 @@ RUN sed -i -e "s/^enabled=True/enabled=False/" /etc/xdg/user-dirs.conf \
 ## ibus
 ENV LANG "ja_JP.UTF-8"
 
-RUN apt.sh vim less git
+RUN apt.sh vim less git tightvncserver
 
-RUN apt-add-repository ppa:webupd8team/atom
-RUN apt.sh atom 
-RUN apt-add-repository --remove ppa:webupd8team/atom
+#RUN apt-add-repository ppa:webupd8team/atom
+#RUN apt.sh atom 
+#RUN apt-add-repository --remove ppa:webupd8team/atom
 
 WORKDIR /etc/xrdp
 #COPY files/xrdp/km-e0010411.ini km-0411.ini
@@ -61,6 +60,12 @@ RUN export uid=${UID} gid=${GID} \
     && echo "${USER}:${PASSWORD}" | chpasswd
 WORKDIR ${HOME}
 
+RUN echo export GTK_IM_MODULE=ibus >> ${HOME}/.xsession\
+    && echo export QT_IM_MODULE=ibus >> ${HOME}/.xsession \
+    && echo export XMODIFIERS=@im=ibus >>${HOME}/.xsession \
+    && echo ibus-daemon -d >>${HOME}/.xsession \
+    && echo mate-session >>${HOME}/.xsession
+
 RUN echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 
 # install atom packages
@@ -80,4 +85,4 @@ RUN chown -R "${USER}:${USER}" ${HOME}
 
 #VOLUME ${HOME}
 EXPOSE 3389
-CMD (rm -f /var/run/xrdp/*; /etc/init.d/xrdp start; tail -f /dev/null)
+CMD (rm -rf /var/run/xrdp/*; /etc/init.d/xrdp start; /etc/init.d/dbus restart; tail -f /var/log/xrdp.log)
