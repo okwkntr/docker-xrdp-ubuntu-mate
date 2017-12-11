@@ -8,20 +8,20 @@ RUN echo 'apt-get update -qq && apt-get install -yq $@ && apt-get clean && rm -r
 
 ## add packages
 RUN apt.sh \ 
-	ubuntu-mate-desktop \
-	mate-desktop-environment \
-	mate-desktop-environment-extra
+    mate-desktop-environment \
+    mate-desktop-environment-extra \
+    ubuntu-mate-desktop
 
 RUN apt-add-repository -y ppa:hermlnx/xrdp \
     && apt.sh xrdp \
     && apt-add-repository --remove -y ppa:hermlnx/xrdp
-RUN sed -i -e "s|\(.*exec.*/etc/X11/Xsession.*\)|#\1|g" \
-	    /etc/xrdp/startwm.sh \
-	    && echo export GTP_IM_MODULE=ibus >>/etc/xrdp/startwm.sh \
-	    && echo export QT_IM_MODULE=ibus >>/etc/xrdp/startwm.sh \
-	    && echo export XMODIFIERS=\"@im=ibus\" >>/etc/xrdp/startwm.sh \
-	    && echo ibus-daemon -dx >>/etc/xrdp/startwm.sh \
-	    && echo mate-session >>/etc/xrdp/startwm.sh
+
+RUN sed -i -e "s|\(.*exec.*/etc/X11/Xsession.*\)|#\1|g" /etc/xrdp/startwm.sh \
+    && echo export GTP_IM_MODULE=ibus >>/etc/xrdp/startwm.sh \
+    && echo export QT_IM_MODULE=ibus >>/etc/xrdp/startwm.sh \
+    && echo export XMODIFIERS=\"@im=ibus\" >>/etc/xrdp/startwm.sh \
+    && echo ibus-daemon -dx >>/etc/xrdp/startwm.sh \
+    && echo mate-session >>/etc/xrdp/startwm.sh
 
 ## set timezone
 RUN ln -s -f /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
@@ -44,7 +44,7 @@ ENV LANG "ja_JP.UTF-8"
 RUN apt.sh vim less git
 
 
-## create vagrant account.uid:gid=1000:1000
+## create user account.uid:gid=1000:1000
 ARG USER=jack
 ARG PASSWORD=jack
 ARG UID=1000
@@ -80,4 +80,7 @@ RUN chown -R "${USER}:${USER}" ${HOME}
 
 #VOLUME ${HOME}
 EXPOSE 3389
-CMD (rm -rf /var/run/xrdp/*; /etc/init.d/xrdp start; /etc/init.d/dbus restart; tail -f /var/log/xrdp.log)
+CMD (rm -rf /var/run/xrdp/*; \
+     /etc/init.d/xrdp start; \
+     /etc/init.d/dbus restart; \
+     tail -f /var/log/xrdp.log)
