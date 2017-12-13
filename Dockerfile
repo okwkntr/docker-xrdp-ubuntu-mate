@@ -37,14 +37,13 @@ RUN sed -i -e "s/^enabled=True/enabled=False/" /etc/xdg/user-dirs.conf \
 ## create user account.uid:gid=1000:1000
 ARG USER=jack
 ARG PASSWORD=jack
-ARG UID=1000
-ARG GID=1000
 ENV HOME /home/${USER}
-RUN export uid=${UID} gid=${GID} \
-    && echo "${USER}:x:${uid}:${gid}:Developer,,,:${HOME}:/usr/bin/fizsh" >> /etc/passwd \
+RUN export uid=1000 gid=1000 \
+    && echo "${USER}:x:${uid}:${gid}:,,,:${HOME}:/bin/bash" >> /etc/passwd \
     && echo "${USER}:x:${uid}:" >> /etc/group \
     && echo "${USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers \
     && echo "${USER}:${PASSWORD}" | chpasswd
+RUN mkdir /data && ln -s /data /home/${USER}
 WORKDIR ${HOME}
 
 RUN echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf

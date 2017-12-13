@@ -4,6 +4,5 @@ services:
   xrdp:
     build:
       context: ./
-#   volumes:
-#     - ./data/:/home/${USER}/
-#   environment:
+    volumes:
+      - "./home/:/data"
