@@ -1,8 +1,15 @@
 FROM ubuntu:latest
 ENV DEBIAN_FRONTEND noninteractive
-RUN echo "resolvconf resolvconf/linkify-resolvconf boolean false" | debconf-set-selections
+#ENV http_proxy ${HTTP_PROXY}
+#ENV https_proxy ${HTTPS_PROXY}
 
-RUN echo 'apt-get update -qq && apt-get install -yq $@ && apt-get clean && rm -rf /var/lib/apt/lists/*' > /usr/local/bin/apt.sh \
+RUN echo 'echo "resolvconf resolvconf/linkify-resolvconf boolean false" \
+            | debconf-set-selections \
+            && apt-get update -qq \
+            && apt-get install -yq $@ \
+            && apt-get clean \
+            && rm -rf /var/lib/apt/lists/*' \
+    > /usr/local/bin/apt.sh \
     && chmod +x /usr/local/bin/apt.sh \
     && sed -i -e 's/archive/jp.archive/g' /etc/apt/sources.list
 
