@@ -1,7 +1,5 @@
 FROM ubuntu:latest
 ENV DEBIAN_FRONTEND noninteractive
-#ENV http_proxy ${HTTP_PROXY}
-#ENV https_proxy ${HTTPS_PROXY}
 
 RUN echo 'echo "resolvconf resolvconf/linkify-resolvconf boolean false" \
             | debconf-set-selections \
@@ -37,10 +35,11 @@ RUN sed -i -e "s/^enabled=True/enabled=False/" /etc/xdg/user-dirs.conf \
 ## create user account.uid:gid=1000:1000
 ARG USER=jack
 ARG PASSWORD=jack
+ARG UID=1000
+ARG GID=1000
 ENV HOME /home/${USER}
-RUN export uid=1000 gid=1000 \
-    && echo "${USER}:x:${uid}:${gid}:,,,:${HOME}:/bin/bash" >> /etc/passwd \
-    && echo "${USER}:x:${uid}:" >> /etc/group \
+RUN echo "${USER}:x:${UID}:${GID}:,,,:${HOME}:/bin/bash" >> /etc/passwd \
+    && echo "${USER}:x:${UID}:" >> /etc/group \
     && echo "${USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers \
     && echo "${USER}:${PASSWORD}" | chpasswd
 RUN mkdir /data && ln -s /data /home/${USER}
@@ -70,7 +69,7 @@ RUN apt-add-repository ppa:webupd8team/atom \
 #    git \
 #    vim
 
-RUN chown -R "${USER}:${USER}" ${HOME}
+#RUN chown -R "${USER}:${USER}" ${HOME}
 
 #VOLUME ${HOME}
 EXPOSE 3389
